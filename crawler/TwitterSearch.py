@@ -8,6 +8,19 @@ from util import *
 import db
 
 
+def get_iterator(pager):
+    while True:
+        try:
+            ret=pager.get_iterator()
+            return ret
+        except TwitterAPI.TwitterError.TwitterRequestError,e:
+            if e.status_code==429:
+                print ("Too Many Requests, now sleeping...")
+                sleep(60)
+            else:
+                raise e
+
+
 def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
     #r = api.request('statuses/filter', {'locations': '112.5,-37.5,154.1,-12.8'})
     next_id=-1
@@ -17,8 +30,8 @@ def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
     if to_id==-1:
         to_id=0
     count=0
-    pager = TwitterPager(api, 'search/tweets', {'q': keyword_query, 'geocode': geocode,  'count': '10','lang' : 'en', 'max_id': str(from_id), 'since_id' : str(to_id)})
-    for item in pager.get_iterator():
+    pager = TwitterPager(api, 'search/tweets', {'q': keyword_query, 'geocode': geocode,  'count': '100','lang' : 'en', 'max_id': str(from_id), 'since_id' : str(to_id)})
+    for item in get_iterator(pager):
         #print(item)
         if 'text' in item:
             #try:
@@ -50,8 +63,9 @@ def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
                     print count
                 #print item["id"],"ok"
                 #print(info["post_text"])
-            #except:
-            #    continue
+            #except TwitterAPI.TwitterError.TwitterRequestError,e:
+            #    if e.status_code==429
+
             progress.update(cur_id,to_id,next_id)
         elif 'message' in item:
             # something needs to be fixed before re-connecting
