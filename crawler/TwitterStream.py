@@ -19,5 +19,5 @@ def search(api,db,keywords,locations):
                 db.put(info)
                 count+=1
                 #print item["text"]
-                if count % 100 ==0:
+                if count % 200 ==0:
                     print count

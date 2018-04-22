@@ -23,7 +23,7 @@ def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
         if 'text' in item:
             #try:
             if True:
-                print item["id"]
+                #print item["id"]
                 cur_id=int(item["id"])
                 #if next_id != -1, we run in re-start mode, don't reset next_id
                 #else we need to update next_id when the first item arrives in this iteration
@@ -46,6 +46,8 @@ def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
                 #print info
                 db.put(info)
                 count+=1
+                if count % 1000 == 0:
+                    print count
                 #print item["id"],"ok"
                 #print(info["post_text"])
             #except:
