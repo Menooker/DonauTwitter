@@ -16,6 +16,7 @@ def search(api,db,keywords,locations):
                 if c:
                     set_if_not_none(info,"coodinates", c[0])
                 set_if_not_none(info,"time", get_data(item,["created_at"]))
+                db.put(info)
                 count+=1
                 #print item["text"]
                 if count % 100 ==0:
