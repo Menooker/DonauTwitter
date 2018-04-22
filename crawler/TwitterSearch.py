@@ -5,9 +5,10 @@ import json
 import progress
 from time import sleep
 from util import *
+import db
 
 
-def do_search(api,keyword_query,geocode,from_id,to_id,next_id):
+def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
     #r = api.request('statuses/filter', {'locations': '112.5,-37.5,154.1,-12.8'})
     next_id=-1
     cur_id=-1
@@ -20,7 +21,8 @@ def do_search(api,keyword_query,geocode,from_id,to_id,next_id):
     for item in pager.get_iterator():
         #print(item)
         if 'text' in item:
-            try:
+            #try:
+            if True:
                 print item["id"]
                 cur_id=int(item["id"])
                 #if next_id != -1, we run in re-start mode, don't reset next_id
@@ -32,7 +34,7 @@ def do_search(api,keyword_query,geocode,from_id,to_id,next_id):
                     break
                 info = dict()
                 
-                info["tweet_id"] = item["id"]
+                info["_id"] = str(item["id"])
                 info["user_id"] = item["user"]["id"]
                 info["post_text"] = item["text"]
                 set_if_not_none(info,"location", get_data(item,["place","name"]) )
@@ -41,27 +43,29 @@ def do_search(api,keyword_query,geocode,from_id,to_id,next_id):
                 if c:
                     set_if_not_none(info,"coodinates", c[0])
                 set_if_not_none(info,"time", get_data(item,["created_at"]))
+                #print info
+                db.put(info)
                 count+=1
                 #print item["id"],"ok"
                 #print(info["post_text"])
-            except:
-                continue
+            #except:
+            #    continue
             progress.update(cur_id,to_id,next_id)
         elif 'message' in item:
             # something needs to be fixed before re-connecting
             raise Exception(item['message'])
     return count
 
-def search(api,keywords,geocode):
+def search(api,db,keywords,geocode):
     keyword_query = " OR ".join(keywords)
     #continue the unfinished progress from from_id to to_id
     from_id,to_id,next_id=progress.get()
-    c=do_search(api,keyword_query,geocode,from_id,to_id,next_id)
+    c=do_search(api,db,keyword_query,geocode,from_id,to_id,next_id)
     print "iteration done. added", c ,"tweets"
     while True:
         from_id,to_id,next_id=progress.get()
         
-        c=do_search(api,keyword_query,geocode,None,next_id,-1)
+        c=do_search(api,db,keyword_query,geocode,None,next_id,-1)
         if c==0:
             sleep(5)
         print "iteration done. added", c ,"tweets"

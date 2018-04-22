@@ -1,13 +1,13 @@
 from TwitterAPI import TwitterAPI
 from util import *
 
-def search(api,keywords,locations):
+def search(api,db,keywords,locations):
     count=0
     query=",".join(keywords)
     r = api.request('statuses/filter', {'locations': locations,'track':query})
     for item in r:
                 info = dict()
-                info["tweet_id"] = item["id"]
+                info["_id"] = str(item["id"])
                 info["user_id"] = item["user"]["id"]
                 info["post_text"] = item["text"]
                 set_if_not_none(info,"location", get_data(item,["place","name"]) )
