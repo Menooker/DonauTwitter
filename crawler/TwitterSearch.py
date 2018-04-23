@@ -8,7 +8,7 @@ from util import *
 import db
 
 
-def get_iterator(pager):
+def try_get_iterator(pager):
     while True:
         try:
             ret=pager.get_iterator()
@@ -31,7 +31,7 @@ def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
         to_id=0
     count=0
     pager = TwitterPager(api, 'search/tweets', {'q': keyword_query, 'geocode': geocode,  'count': '100','lang' : 'en', 'max_id': str(from_id), 'since_id' : str(to_id)})
-    for item in get_iterator(pager):
+    for item in try_get_iterator(pager):
         #print(item)
         if 'text' in item:
             #try:
@@ -45,17 +45,10 @@ def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
                     next_id=cur_id
                 if cur_id<=to_id:
                     break
-                info = dict()
-                
-                info["_id"] = str(item["id"])
-                info["user_id"] = item["user"]["id"]
-                info["post_text"] = item["text"]
-                set_if_not_none(info,"location", get_data(item,["place","name"]) )
-                set_if_not_none(info,"location_fullname", get_data(item,["place","full_name"]) )
-                c=get_data(item,["place","bounding_box","coordinates"])
-                if c:
-                    set_if_not_none(info,"coodinates", c[0])
-                set_if_not_none(info,"time", get_data(item,["created_at"]))
+                info=get_dict_object_from_tweet(item)
+                if not info:
+                    print "Error parsing the tweet, ignore it"
+                    continue
                 #print info
                 db.put(info)
                 count+=1
@@ -82,8 +75,9 @@ def search(api,db,keywords,geocode):
         from_id,to_id,next_id=progress.get()
         
         c=do_search(api,db,keyword_query,geocode,None,next_id,-1)
-        if c==0:
-            sleep(5)
         print "iteration done. added", c ,"tweets"
+        if c==0:
+            print("No tweets found, sleeping...")
+            sleep(60)
         print "F",from_id,"T",to_id,"N",next_id
 
