@@ -1,0 +1,18 @@
+{
+	"access_key" : "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+	"secret_key" : "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+	"image" : "ami-e2d5e55e",
+	"instance_type" : "m1.medium",
+	"region" : "melbourne-qh2",
+	"sec_group" : ["ssh", "http(s)","default","coachdb","IMCP"],
+	"key_pair" : "menooker",
+	"volumn_type" : "melbourne",
+	"instances":[
+		{"size":75,"type":"db"},
+		{"size":75,"type":"db"},
+		{"size":50,"type":"web"},
+		{"size":50,"type":"web"}
+	],
+	"output_header":"[all:vars]\nansible_user=ubuntu\nansible_ssh_private_key_file=/home/menooker/.ssh/id_rsa"
+}
+
