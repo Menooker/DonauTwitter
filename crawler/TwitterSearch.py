@@ -1,4 +1,4 @@
-from TwitterAPI import TwitterAPI
+import TwitterAPI
 from TwitterAPI import TwitterPager
 #from TwitterPager2 import TwitterPager2
 import json
