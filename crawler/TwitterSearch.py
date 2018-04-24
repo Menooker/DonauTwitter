@@ -30,7 +30,7 @@ def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
     if to_id==-1:
         to_id=0
     count=0
-    pager = TwitterPager(api, 'search/tweets', {'q': keyword_query, 'geocode': geocode,  'count': '100','lang' : 'en', 'max_id': str(from_id), 'since_id' : str(to_id)})
+    pager = TwitterPager(api, 'search/tweets', {'q': keyword_query, 'geocode': geocode,  'count': '100', 'max_id': str(from_id), 'since_id' : str(to_id)})
     for item in try_get_iterator(pager):
         #print(item)
         if 'text' in item:

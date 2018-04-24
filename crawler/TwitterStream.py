@@ -5,10 +5,14 @@ def search(api,db,keywords,locations):
     count=0
     query=",".join(keywords)
     
-
+    request_map={'locations': locations}
+    if query=="":
+        print "empty keywords"
+    else:
+        request_map['track']=query
     while True:
         try:
-            r = api.request('statuses/filter', {'locations': locations,'track':query})
+            r = api.request('statuses/filter', request_map)
             for item in r:
                 info=get_dict_object_from_tweet(item)
                 if not info:
