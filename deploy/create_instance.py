@@ -3,12 +3,9 @@ import boto
 from boto.ec2.regioninfo import RegionInfo
 import json
 
-def get_real_instance_info(inst):
-    all_res = conn.get_all_reservations()
-    for res in all_res:
-        if res.id == inst.id:
-            return res
-
+'''
+Create a instance and a "size" GB volumn, return the volumn
+'''
 def create(size):
     print "Creating instance of",size,"GB"
     vol_req = conn.create_volume(
@@ -23,6 +20,9 @@ def create(size):
     print "Created a", size ,"GB instance"
     return vol_req
 
+'''
+print the instance info from the list
+'''
 def print_instances(res):
     for ins in res:
         print "---------------------"
@@ -31,8 +31,7 @@ def print_instances(res):
         print "ID: ", ins.instances[0].id
         print "Key: ", ins.instances[0].key_name
 
-
-
+#First load config from the file
 config=json.load(open("config.json"))
 access_key=config["access_key"]
 secret_key=config["secret_key"]
@@ -44,6 +43,8 @@ key_pair=config["key_pair"]
 image_name=config["image"]
 volumn_type=config["volumn_type"]
 output_header=config["output_header"]
+
+#connect to ec2 server
 conn = boto.connect_ec2(
         aws_access_key_id=access_key,
         aws_secret_access_key=secret_key,
@@ -53,10 +54,13 @@ conn = boto.connect_ec2(
         path='/services/Cloud',
         validate_certs=False)
 
+#write the host file
 f=open("hosts","w+")
 f.write(output_header+"\n\n")
 
+#vol maps the VM types to lists of volumns
 vols=dict()
+#types maps the VM types to lists of IPs
 types=dict()
 
 for sz in instances_config:
@@ -69,20 +73,24 @@ for sz in instances_config:
 print "Create Done, waiting for the instances..."
 time.sleep(65)
 print "Getting instance info..."
+#Re-fetch the instances' info. Now they should all finish spawning and the IPs should be vaild. 
 all_inst=conn.get_all_reservations()
 print_instances(all_inst)
 count=0
+
+#Bind the volumns with the VMs
 for ty in vols:
     types[ty]=[]
     for vol in vols[ty]:
         print "Attach volume of",ty
-        if conn.attach_volume(vol.id, all_inst[count].instances[0].id, "/dev/vdb"):
-            print("Volume attached OK!")
+        if conn.attach_volume(vol.id, all_inst[count].instances[0].id, "/dev/vdc"):
+            print("Volume attache done!")
         else:
-            print("Volume attached Failed!")
+            print("Volume attache Failed!")
         types[ty].append(all_inst[count].instances[0].private_ip_address)
         count+=1
 
+#Output IPs and VM types
 for ty in types:
     f.write("[%s]\n" % ty)
     for ip in types[ty]:
