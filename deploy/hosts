@@ -3,8 +3,10 @@ ansible_user=ubuntu
 ansible_ssh_private_key_file=/home/menooker/.ssh/id_rsa
 
 [web]
-115.146.86.137
 115.146.85.232
+
+[analysis]
+115.146.86.137
 
 [db]
 115.146.85.87

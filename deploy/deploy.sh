@@ -15,4 +15,7 @@
 #ansible-playbook -i hosts playbook/couchdb.yml
 
 #For db instances, install and run harvester
-ansible-playbook -i hosts playbook/harvester.yml
+#ansible-playbook -i hosts playbook/harvester.yml
+
+#For web instances, install and run webserver
+ansible-playbook -i hosts playbook/webserver.yml

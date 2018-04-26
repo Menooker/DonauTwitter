@@ -1,0 +1,31 @@
+---
+- name: Install Web server
+  hosts: web
+  remote_user: ubuntu
+  become: yes
+  tasks:
+  - name: Install apache2
+    apt: 
+      name: apache2
+      state: present
+  - name: Install python-software-properties
+    apt: 
+      name: python-software-properties
+      state: present
+  - apt_repository:
+      repo: ppa:ondrej/php
+  - name: Install php7.2
+    apt: 
+      name: php7.2
+      update_cache: yes
+      state: present
+  - name: Mysql | Set root password
+    shell: debconf-set-selections <<< 'mysql-server mysql-server/root_password password cloud'
+    args:
+      executable: /bin/bash
+  - name: Mysql | Set root repassword
+    shell: debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password cloud'
+    args:
+      executable: /bin/bash
+  - name: Install Mysql
+    apt: pkg=mysql-server state=latest

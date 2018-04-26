@@ -10,7 +10,7 @@
 	"instances":[
 		{"size":75,"type":"db"},
 		{"size":75,"type":"db"},
-		{"size":50,"type":"web"},
+		{"size":50,"type":"analysis"},
 		{"size":50,"type":"web"}
 	],
 	"output_header":"[all:vars]\nansible_user=ubuntu\nansible_ssh_private_key_file=/home/menooker/.ssh/id_rsa"
