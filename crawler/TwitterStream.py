@@ -1,19 +1,30 @@
 import TwitterAPI
 from util import *
 
+'''
+filter the twitter stream
+Param:
+    api: the TwitterAPI object
+    db: the couchdb wrapper object
+    keywords: the list of keywords
+    location: the string of location coordinates boxes
+'''
 def search(api,db,keywords,locations):
     count=0
     query=",".join(keywords)
     
+    #construct the request to twitter
     request_map={'locations': locations}
     if query=="":
         print "empty keywords"
     else:
+        #if the keywords are not empty, set it in the request
         request_map['track']=query
     while True:
         try:
             r = api.request('statuses/filter', request_map)
             for item in r:
+                #for each tweets in the stream, construct the dict data for our db
                 info=get_dict_object_from_tweet(item)
                 if not info:
                     print "Error parsing the tweet, ignore it"
