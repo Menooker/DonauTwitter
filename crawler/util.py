@@ -43,8 +43,9 @@ def get_dict_object_from_tweet(item):
         return None
     set_if_not_none(info,"location", get_data(item,["place","name"]) )
     set_if_not_none(info,"location_fullname", get_data(item,["place","full_name"]) )
-    c=get_data(item,["place","bounding_box","coordinates"])
+    c=get_data(item,["coordinates","coordinates"])
     if c:
-        set_if_not_none(info,"coodinates", c[0])
+        info["coodinates"]=c
+        #print c
     set_if_not_none(info,"time", get_data(item,["created_at"]))
     return info
