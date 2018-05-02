@@ -63,8 +63,7 @@ def do_search(api,db,keyword_query,geocode,from_id,to_id,next_id):
                             print "Error parsing the tweet, ignore it"
                             continue
                         #put the data in the db
-                        if "coodinates" in info:
-                            db.put(info)
+                        db.put(info)
                         count+=1
                         if count % 1000 == 0:
                             print count

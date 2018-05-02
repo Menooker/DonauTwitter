@@ -29,8 +29,8 @@ def search(api,db,keywords,locations):
                 if not info:
                     print "Error parsing the tweet, ignore it"
                     continue
-                if "coodinates" in info:
-                    db.put(info)
+                
+                db.put(info)
                 count+=1
                 #print item["text"]
                 if count % 200 ==0:
