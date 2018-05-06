@@ -28,13 +28,19 @@ def map(func,url,dbname,batch_size=5000,batch_done=None):
         
 
 '''
-map all documents in the db of the url with the map function
+create a view in couchdb using the JS map function, and iterate the view with a python function "func"
 Params:
-    func: the function to process the documents, the parameter of the func is a dict of a document. The func must
-        return True if it wants to update the document
+    func: the function to process the documents, the parameter1 of the func is a dict of a document. the parameter 2
+        of the func is the batch_id
     url: the url of the db
     dbname: the name of the db
+    design_doc_name: design document name, used for id:_design/{design_doc_name}
+    view_name: the view name
+    mapfunc: a string of JavaScript function for the map function in couchdb
+    recompute: whether to delete the old design document. If false, the parameter "mapfunc" is ignored
     batch_size: the size of one batch of iteration
+    batch_start: start fetching the documents from which batch?
+    batch_done: will be called when a batch is done if not None
 '''
 def map2(func,url,dbname,design_doc_name,view_name,mapfunc,recompute=False,batch_size=5000,batch_start=0,batch_done=None):
     server = couchdb.Server(url=url)
@@ -56,6 +62,7 @@ def map2(func,url,dbname,design_doc_name,view_name,mapfunc,recompute=False,batch
                 doc_count = r.value
             break
         except couchdb.http.ServerError as e:
+            #if is time out exception, ignore and try again
             if e.args[0][0]!=500:
                 print e.args[0]
                 raise e
