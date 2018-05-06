@@ -81,7 +81,7 @@ def map2(func,url,dbname,design_doc_name,view_name,mapfunc,recompute=False,batch
 #            batch_done(i)
 #        print "Batch", i ,"done"
     cnt=0
-    i=0
+    i=batch_start
     for row in db.iterview(design_doc_name+"/"+view_name,batch_size,reduce=False,include_docs=True, skip=batch_start*batch_size):
         data = row.doc
         func(data,i)
@@ -89,6 +89,7 @@ def map2(func,url,dbname,design_doc_name,view_name,mapfunc,recompute=False,batch
         if cnt==batch_size:
             if batch_done:
                 batch_done(i)
+            print "Batch", i ,"done"
             i+=1
             cnt=0
     if cnt!=0:
