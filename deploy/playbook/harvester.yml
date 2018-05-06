@@ -10,10 +10,10 @@
       name: python-pip
       state: present
 
-  - name: Install TwitterAPI and couchdb
+  - name: Install TwitterAPI, analysis tools and couchdb
     become: yes
     pip:
-      name: TwitterAPI couchdb nltk
+      name: TwitterAPI couchdb nltk vaderSentiment
 
   - name: Copy private key of the GitHub account
     copy:
