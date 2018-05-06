@@ -1,6 +1,4 @@
 import couchdb
-import pickle
-
 '''
 map all documents in the db of the url with the map function
 Params:
@@ -10,10 +8,9 @@ Params:
     dbname: the name of the db
     batch_size: the size of one batch of iteration
 '''
-def map(func,url,dbname,batch_size=5000):
+def map(func,url,dbname,batch_size=5000,batch_done=None):
     server = couchdb.Server(url=url)
     db = server[dbname]
-    locationDict= {}
     count = 0
 
     doc_count = db.info()["doc_count"]
@@ -24,16 +21,58 @@ def map(func,url,dbname,batch_size=5000):
     for i in range(batches):
         for row in db.view("_all_docs", skip=i*batch_size,limit=batch_size):
             data = db.get(row.id)
-            func(data,locationDict)
-            count += 1
-            if count >= 1000:
-                output = open('locationDict.pkl','wb')
-                pickle.dump(locationDict,output,protocol=0)
-                output.close()
-                print("Run successfully")
-                exit(0)
+            func(data,i)
+        if batch_done:
+            batch_done(i)
         print "Batch", i ,"done"
         
+
+'''
+map all documents in the db of the url with the map function
+Params:
+    func: the function to process the documents, the parameter of the func is a dict of a document. The func must
+        return True if it wants to update the document
+    url: the url of the db
+    dbname: the name of the db
+    batch_size: the size of one batch of iteration
+'''
+def map2(func,url,dbname,design_doc_name,view_name,mapfunc,recompute=False,batch_size=5000,batch_start=0,batch_done=None):
+    server = couchdb.Server(url=url)
+    db = server[dbname]
+    if recompute:
+        #fetch and delete old design doc
+        olddoc=db.get("_design/"+design_doc_name)
+        if olddoc:
+            db.delete(olddoc)
+        #make and save the new doc
+        design_doc={'_id': "_design/"+design_doc_name, 'views': {view_name: {'map': mapfunc, 'reduce': '_count'}}}
+        db.save(design_doc)
+    #get the number of rows in total
+    while True:
+        try:
+            countrow=db.view(design_doc_name+"/"+view_name)
+            doc_count = 0
+            for r in countrow:
+                doc_count = r.value
+            break
+        except couchdb.http.ServerError as e:
+            if e.args[0][0]!=500:
+                print e.args[0]
+                raise e
+            print "Time out, but we can wait...."
+    print "In total",doc_count,"Documents"
+
+    batches = doc_count/batch_size
+    if doc_count % batch_size!=0 :
+        batches+=1
+
+    for i in range(batch_start,batches):
+        for row in db.view(design_doc_name+"/"+view_name,reduce=False,include_docs=True, skip=i*batch_size,limit=batch_size):
+            data = row.doc
+            func(data,i)
+        if batch_done:
+            batch_done(i)
+        print "Batch", i ,"done"
 
 '''
 map all documents in the db of the url with the map function, and write to another db

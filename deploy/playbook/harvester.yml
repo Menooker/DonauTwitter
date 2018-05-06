@@ -13,7 +13,7 @@
   - name: Install TwitterAPI and couchdb
     become: yes
     pip:
-      name: TwitterAPI couchdb
+      name: TwitterAPI couchdb nltk
 
   - name: Copy private key of the GitHub account
     copy:
