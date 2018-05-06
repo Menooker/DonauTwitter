@@ -68,7 +68,7 @@ if os.path.isfile("locationDict.pkl"):
     with open('locationDict.pkl', 'rb') as f:
         locationDict = pickle.load(f)
         prog = locationDict['__progress__']
-        couchdb_map.map2(testfunc,'http://admin:admin@localhost:5984/',"tweets","locations","view",mapfunc,recompute=False,batch_done=batch_done,batch_start=prog,batch_size=200)
+        couchdb_map.map2(testfunc,'http://admin:admin@localhost:5984/',"tweets","locations","view",mapfunc,recompute=False,batch_done=batch_done,batch_start=prog+1,batch_size=200)
 else:
     couchdb_map.map2(testfunc,'http://admin:admin@localhost:5984/',"tweets","locations","view",mapfunc,recompute=True,batch_done=batch_done,batch_size=200)
 

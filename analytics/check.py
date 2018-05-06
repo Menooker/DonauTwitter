@@ -8,4 +8,5 @@ class Area:
 with open('locationDict.pkl', 'rb') as f:
 	output = pickle.load(f)
 for key,value in output.items():
-	print(key,value.totalCount,value.negCount,value.posCount)
+	if key!='__progress__':
+		print(key,value.totalCount,value.negCount,value.posCount)
