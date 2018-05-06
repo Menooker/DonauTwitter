@@ -73,13 +73,27 @@ def map2(func,url,dbname,design_doc_name,view_name,mapfunc,recompute=False,batch
     if doc_count % batch_size!=0 :
         batches+=1
 
-    for i in range(batch_start,batches):
-        for row in db.view(design_doc_name+"/"+view_name,reduce=False,include_docs=True, skip=i*batch_size,limit=batch_size):
-            data = row.doc
-            func(data,i)
-        if batch_done:
-            batch_done(i)
-        print "Batch", i ,"done"
+#    for i in range(batch_start,batches):
+#        for row in db.view(design_doc_name+"/"+view_name,reduce=False,include_docs=True, skip=i*batch_size,limit=batch_size):
+#            data = row.doc
+#            func(data,i)
+#        if batch_done:
+#            batch_done(i)
+#        print "Batch", i ,"done"
+    cnt=0
+    i=0
+    for row in db.iterview(design_doc_name+"/"+view_name,batch_size,reduce=False,include_docs=True, skip=batch_start*batch_size):
+        data = row.doc
+        func(data,i)
+        cnt+=1
+        if cnt==batch_size:
+            if batch_done:
+                batch_done(i)
+            i+=1
+            cnt=0
+    if cnt!=0:
+        batch_done(i)  
+
 
 '''
 map all documents in the db of the url with the map function, and write to another db
