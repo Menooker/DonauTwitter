@@ -33,7 +33,7 @@ locationDict= {}
 def testfunc(item,batch_id):
     global locationDict
     sid = SentimentIntensityAnalyzer()
-    try:
+    if True:
         location = item['location']
         if not location in locationDict.keys():
             locationDict[location] = Area(name = location, totalCount = 0, posCount = 0, negCount = 0)
@@ -43,7 +43,8 @@ def testfunc(item,batch_id):
             locationDict[location].negCount += 1
         elif sid.polarity_scores(sentence)['neg'] - sid.polarity_scores(sentence)['pos'] < 0:
             locationDict[location].posCount += 1
-    except:
+    #except:
+    else:
         pass
 
 def batch_done(batch_id):
@@ -67,8 +68,8 @@ if os.path.isfile("locationDict.pkl"):
     with open('locationDict.pkl', 'rb') as f:
         locationDict = pickle.load(f)
         prog = locationDict['__progress__']
-        couchdb_map.map2(testfunc,'http://admin:admin@localhost:5984/',"tweets","locations","view",mapfunc,recompute=False,batch_done=batch_done,batch_start=prog)
+        couchdb_map.map2(testfunc,'http://admin:admin@localhost:5984/',"tweets","locations","view",mapfunc,recompute=False,batch_done=batch_done,batch_start=prog,batch_size=200)
 else:
-    couchdb_map.map2(testfunc,'http://admin:admin@localhost:5984/',"tweets","locations","view",mapfunc,recompute=True,batch_done=batch_done)
+    couchdb_map.map2(testfunc,'http://admin:admin@localhost:5984/',"tweets","locations","view",mapfunc,recompute=True,batch_done=batch_done,batch_size=200)
 
 

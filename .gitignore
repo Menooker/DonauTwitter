@@ -1,3 +1,4 @@
 *.pyc
 progress.txt
 */config.json
+*.pkl
