@@ -8,8 +8,8 @@ Create a instance and a "size" GB volumn, return the volumn
 '''
 def create(size):
     print "Creating instance of",size,"GB"
-    vol_req = conn.create_volume(
-        size, region, volume_type=volumn_type)
+    #vol_req = conn.create_volume(
+    #    size, region, volume_type=volumn_type)
     inst=conn.run_instances(
         image_name,
         key_name=key_pair,
@@ -18,7 +18,7 @@ def create(size):
         placement=region)
 
     print "Created a", size ,"GB instance"
-    return vol_req
+    return None
 
 '''
 print the instance info from the list
@@ -79,22 +79,14 @@ print_instances(all_inst)
 count=0
 
 #Bind the volumns with the VMs
-for ty in vols:
-    types[ty]=[]
-    for vol in vols[ty]:
-        print "Attach volume of",ty
-        if conn.attach_volume(vol.id, all_inst[count].instances[0].id, "/dev/vdc"):
-            print("Volume attache done!")
-        else:
-            print("Volume attache Failed!")
-        types[ty].append(all_inst[count].instances[0].private_ip_address)
-        count+=1
+ip=all_inst[count].instances[0].private_ip_address
+
 
 #Output IPs and VM types
+types=['db','web','harvester']
 for ty in types:
     f.write("[%s]\n" % ty)
-    for ip in types[ty]:
-        f.write(ip+"\n")
+    f.write(ip+"\n")
     f.write("\n")
 f.close()
 

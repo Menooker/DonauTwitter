@@ -25,9 +25,8 @@
   
   - name: Fetch the source code of the harvester
     git:
-      repo: git@github.com:Menooker/DonauTwitter
+      repo: https://github.com/Menooker/DonauTwitter
       dest: /home/ubuntu/DonauTwitter
-      accept_hostkey: yes
 
   - name: Copy harvester config file
     copy:

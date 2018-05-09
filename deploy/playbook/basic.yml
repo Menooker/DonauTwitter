@@ -5,6 +5,10 @@
   become: yes
 
   tasks:
+  - name: apt
+    copy:
+        src: ../au_archive_ubuntu_com_ubuntu.list
+        dest: /etc/apt/sources.list.d/au_archive_ubuntu_com_ubuntu.list
   - name: apt-get update
     apt: update_cache=yes
 
@@ -13,11 +17,6 @@
     with_items:
         - vim
         - curl
-
-  - name: Format volume using ext4
-    filesystem:
-      fstype: ext4
-      dev: /dev/vdc 
   
   - name: Create the directory
     file:
@@ -25,11 +24,9 @@
       state: directory
 
   - name: Mount
-    mount:
-      name: /extra
-      src: /dev/vdc
-      fstype: ext4
-      state: mounted
+    command: "{{ item }}"
+    with_items:
+      - touch 123
 
   - name: Change the permission of the mount directory
     file:
