@@ -1,3 +1,12 @@
+#This file is developed by Team 18 of COMP90024 of The University of Melbourne, under Apache Licence(see LICENCE).
+#Researched Cities: Victoria, AU
+#Team member - id:
+#Yixiong Ding  671499     
+#Yijie Mei     861351
+#Tiange Wuang  903588
+#Wuang Shen    716090
+#Ruifeng Luo   686141
+
 import TwitterAPI
 from TwitterAPI import TwitterPager
 #from TwitterPager2 import TwitterPager2
